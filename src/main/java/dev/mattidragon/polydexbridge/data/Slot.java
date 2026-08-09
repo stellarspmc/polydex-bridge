@@ -1,17 +1,17 @@
 package dev.mattidragon.polydexbridge.data;
 
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
 import java.util.Arrays;
 import java.util.List;
 
 public record Slot(int x, int y, List<BridgeStack> stacks) {
-    public static final PacketCodec<RegistryByteBuf, Slot> CODEC = PacketCodec.tuple(
-            PacketCodecs.VAR_INT, Slot::x,
-            PacketCodecs.VAR_INT, Slot::y,
-            BridgeStack.CODEC.collect(PacketCodecs.toList()), Slot::stacks,
+    public static final StreamCodec<RegistryFriendlyByteBuf, Slot> CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, Slot::x,
+            ByteBufCodecs.VAR_INT, Slot::y,
+            BridgeStack.CODEC.apply(ByteBufCodecs.list()), Slot::stacks,
             Slot::new
     );
 
