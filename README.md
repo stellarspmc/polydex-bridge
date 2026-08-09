@@ -19,3 +19,6 @@ If that happens the issue should be reported on this mods GitHub Page.
 
 Using different versions of PolydexBridge on the client and server is not supported,
 expect to be disconnected with errors.
+
+## 26.2 support
+using [emi port](https://github.com/link-fgfgui/emi) for 26.2 EMI
