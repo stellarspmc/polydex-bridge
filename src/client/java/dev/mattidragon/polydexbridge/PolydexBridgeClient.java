@@ -17,11 +17,11 @@ public class PolydexBridgeClient implements ClientModInitializer {
 	
 	@Override
 	public void onInitializeClient() {
-		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> disconnect());
-		ClientConfigurationConnectionEvents.INIT.register(((handler, client) -> disconnect()));
+		ClientPlayConnectionEvents.DISCONNECT.register((_, _) -> disconnect());
+		ClientConfigurationConnectionEvents.INIT.register(((_, _) -> disconnect()));
 		
-		ClientConfigurationNetworking.registerGlobalReceiver(BridgeEnablePacket.ID, (packet, context) -> waitForPoly = true);
-		ClientPlayNetworking.registerGlobalReceiver(PolydexRecipesPacket.ID, (packet, context) -> {
+		ClientConfigurationNetworking.registerGlobalReceiver(BridgeEnablePacket.ID, (_, _) -> waitForPoly = true);
+		ClientPlayNetworking.registerGlobalReceiver(PolydexRecipesPacket.ID, (packet, _) -> {
 			RECIPES.clear();
 			RECIPES.addAll(packet.recipes());
 			onPolyRecipes.run();

@@ -4,8 +4,8 @@ import dev.emi.emi.api.EmiPlugin;
 import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.stack.EmiStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 
 import java.util.HashMap;
 
@@ -20,7 +20,7 @@ public class BridgeEmiPlugin implements EmiPlugin {
             for (var category : recipe.categories()) {
                 categories.computeIfAbsent(category.id(), id -> new EmiRecipeCategory(id, EmiStack.of(recipe.typeIcon())) {
                     @Override
-                    public Text getName() {
+                    public Component getName() {
                         return category.name();
                     }
                 });
