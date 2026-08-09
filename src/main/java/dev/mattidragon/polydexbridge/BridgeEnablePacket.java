@@ -14,7 +14,7 @@ public enum BridgeEnablePacket implements CustomPacketPayload {
     public static final StreamCodec<FriendlyByteBuf, BridgeEnablePacket> CODEC = StreamCodec.unit(INSTANCE);
 
     public static void register() {
-        PayloadTypeRegistry.clientboundPlay().register(ID, CODEC);
+        PayloadTypeRegistry.clientboundConfiguration().register(ID, CODEC);
     }
     
     @Override

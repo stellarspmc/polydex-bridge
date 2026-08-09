@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectio
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +19,8 @@ public class PolydexBridgeClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		ClientPlayConnectionEvents.DISCONNECT.register((_, _) -> disconnect());
-		ClientConfigurationConnectionEvents.INIT.register(((_, _) -> disconnect()));
-		
+		ClientConfigurationConnectionEvents.INIT.register((_, _) -> disconnect());
+
 		ClientConfigurationNetworking.registerGlobalReceiver(BridgeEnablePacket.ID, (_, _) -> waitForPoly = true);
 		ClientPlayNetworking.registerGlobalReceiver(PolydexRecipesPacket.ID, (packet, _) -> {
 			RECIPES.clear();

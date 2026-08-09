@@ -17,7 +17,7 @@ public record PolydexRecipesPacket(List<BridgeRecipe> recipes) implements Custom
     public static final Type<PolydexRecipesPacket> ID = new Type<>(Identifier.fromNamespaceAndPath(PolydexBridge.MOD_ID, "sync_recipes"));
     
     public static void register() {
-        PayloadTypeRegistry.serverboundPlay().register(ID, CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(ID, CODEC);
     }
     
     @Override
