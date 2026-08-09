@@ -6,22 +6,26 @@ import eu.pb4.polydex.api.v1.recipe.PageBuilder;
 import eu.pb4.polydex.api.v1.recipe.PolydexIngredient;
 import eu.pb4.polydex.api.v1.recipe.PolydexStack;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.context.ContextMap;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
+import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class PageConverter implements PageBuilder {
-    private final ServerPlayerEntity player;
+    private final ServerPlayer player;
     public final List<Slot> icons = new ArrayList<>();
     public final List<Slot> inputs = new ArrayList<>();
     public final List<Slot> outputs = new ArrayList<>();
 
-    public PageConverter(ServerPlayerEntity player) {
+    public PageConverter(ServerPlayer player) {
         this.player = player;
     }
 
@@ -36,6 +40,11 @@ public class PageConverter implements PageBuilder {
     }
 
     @Override
+    public void set(int x, int y, SlotDisplay slotDisplay) {
+        icons.add(new Slot(x, y, convertSlotDisplay(slotDisplay, player)));
+    }
+
+    @Override
     public void setOutput(int x, int y, ItemStack... stacks) {
         outputs.add(new Slot(x, y, Arrays.stream(stacks).map(BridgeStack::new).toList()));
     }
@@ -46,13 +55,36 @@ public class PageConverter implements PageBuilder {
     }
 
     @Override
+    public void setOutput(int x, int y, SlotDisplay slotDisplay) {
+        outputs.add(new Slot(x, y, convertSlotDisplay(slotDisplay, player)));
+    }
+
+    @Override
     public void setIngredient(int x, int y, ItemStack... stacks) {
         inputs.add(new Slot(x, y, Arrays.stream(stacks).map(BridgeStack::new).toList()));
     }
 
     @Override
     public void setIngredient(int x, int y, Ingredient ingredient) {
-        inputs.add(new Slot(x, y, Arrays.stream(ingredient.getMatchingStacks()).map(BridgeStack::new).toList()));
+        List<BridgeStack> stacks = ingredient.items()
+                .map(ItemStack::new)
+                .map(BridgeStack::new)
+                .toList();
+        inputs.add(new Slot(x, y, stacks));
+    }
+
+    @Override
+    public void setIngredient(int x, int y, Optional<Ingredient> optional) {
+        if (optional.isPresent()) {
+            setIngredient(x, y, optional.get());
+        } else {
+            setEmpty(x, y);
+        }
+    }
+
+    @Override
+    public void setIngredient(int x, int y, SlotDisplay slotDisplay) {
+        inputs.add(new Slot(x, y, convertSlotDisplay(slotDisplay, player)));
     }
 
     @Override
@@ -82,7 +114,16 @@ public class PageConverter implements PageBuilder {
         return true;
     }
 
-    public static List<BridgeStack> convertIngredient(PolydexIngredient<?> ingredient, ServerPlayerEntity player) {
+    public static List<BridgeStack> convertIngredient(PolydexIngredient<?> ingredient, ServerPlayer player) {
         return ingredient.asStacks().stream().map(stack -> new BridgeStack(stack.toItemStack(player), ingredient.chance())).toList();
+    }
+
+    public static List<BridgeStack> convertSlotDisplay(SlotDisplay display, ServerPlayer player) {
+        if (display == null) return List.of();
+        ContextMap context = SlotDisplayContext.fromLevel(player.level());
+        return display.resolveForStacks(context)
+                .stream()
+                .map(BridgeStack::new)
+                .toList();
     }
 }
