@@ -8,7 +8,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,22 +23,20 @@ public class PolydexBridge implements ModInitializer {
 		PolydexRecipesPacket.register();
 		BridgeEnablePacket.register();
 		
-		ServerConfigurationConnectionEvents.CONFIGURE.register((handler, server) -> {
-			ServerConfigurationNetworking.send(handler, BridgeEnablePacket.INSTANCE);
-		});
+		ServerConfigurationConnectionEvents.CONFIGURE.register((handler, _) -> ServerConfigurationNetworking.send(handler, BridgeEnablePacket.INSTANCE));
 		
 		PolydexPageUtils.AFTER_PAGE_LOADING.register(PolydexBridge::sendRecipes);
 	}
 
 	private static void sendRecipes(MinecraftServer server) {
-		for (var player : server.getPlayerManager().getPlayerList()) {
+		for (var player : server.getPlayerList().getPlayers()) {
 			if (ServerPlayNetworking.canSend(player, PolydexRecipesPacket.ID)) {
 				ServerPlayNetworking.send(player, createPacket(player));
 			}
 		}
 	}
 
-	public static PolydexRecipesPacket createPacket(ServerPlayerEntity player) {
+	public static PolydexRecipesPacket createPacket(ServerPlayer player) {
 		var recipes = new ArrayList<BridgeRecipe>();
 		for (var page : PolydexPageUtils.getAllPages()) {
 			var categories = page.categories()
