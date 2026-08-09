@@ -1,14 +1,15 @@
 package dev.mattidragon.polydexbridge.data;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
+
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.item.ItemStack;
 
 public record BridgeStack(ItemStack stack, float chance) {
-    public static final PacketCodec<RegistryByteBuf, BridgeStack> CODEC = PacketCodec.tuple(
-            ItemStack.OPTIONAL_PACKET_CODEC, BridgeStack::stack,
-            PacketCodecs.FLOAT, BridgeStack::chance,
+    public static final StreamCodec<RegistryFriendlyByteBuf, BridgeStack> CODEC = StreamCodec.composite(
+            ItemStack.OPTIONAL_STREAM_CODEC, BridgeStack::stack,
+            ByteBufCodecs.FLOAT, BridgeStack::chance,
             BridgeStack::new);
 
     public BridgeStack(ItemStack stack) {

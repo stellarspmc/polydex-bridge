@@ -1,15 +1,16 @@
 package dev.mattidragon.polydexbridge.data;
 
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.text.Text;
-import net.minecraft.text.TextCodecs;
-import net.minecraft.util.Identifier;
 
-public record BridgeCategory(Identifier id, Text name) {
-    public static final PacketCodec<PacketByteBuf, BridgeCategory> CODEC = PacketCodec.tuple(
-            Identifier.PACKET_CODEC, BridgeCategory::id,
-            TextCodecs.PACKET_CODEC, BridgeCategory::name,
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.Identifier;
+
+public record BridgeCategory(Identifier id, Component name) {
+    public static final StreamCodec<RegistryFriendlyByteBuf, BridgeCategory> CODEC = StreamCodec.composite(
+            Identifier.STREAM_CODEC, BridgeCategory::id,
+            ComponentSerialization.STREAM_CODEC, BridgeCategory::name,
             BridgeCategory::new
     );
 
