@@ -12,6 +12,8 @@ base {
 
 repositories {
 	maven { url "https://maven.nucleoid.xyz/" }
+	maven { url "https://maven.blamejared.com/" }
+	maven { url "https://modmaven.dev" }
 }
 
 loom {
@@ -31,7 +33,9 @@ dependencies {
 	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 	implementation "eu.pb4:sgui:${project.sgui_version}"
 	implementation "eu.pb4:polydex:${project.polydex_version}"
-	clientImplementation files("libs/emi-1.1.24-3bfa16a+26.2+fabric.jar")
+	compileOnly("mezz.jei:jei-${project.minecraft_version}-fabric-api:${project.jei_version}")
+	runtimeOnly("mezz.jei:jei-${project.minecraft_version}-fabric:${project.jei_version}")
+	implementation include("eu.pb4:polymer-core:0.17.3+26.2")
 }
 
 processResources {

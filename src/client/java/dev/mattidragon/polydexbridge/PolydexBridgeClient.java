@@ -6,29 +6,32 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectio
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PolydexBridgeClient implements ClientModInitializer {
 	public static final List<BridgeRecipe> RECIPES = new ArrayList<>();
-	public static Runnable onPolyRecipes = () -> {};
 	public static boolean waitForPoly = false;
-	
+
 	@Override
 	public void onInitializeClient() {
 		ClientPlayConnectionEvents.DISCONNECT.register((_, _) -> disconnect());
 		ClientConfigurationConnectionEvents.INIT.register((_, _) -> disconnect());
 
 		ClientConfigurationNetworking.registerGlobalReceiver(BridgeEnablePacket.ID, (_, _) -> waitForPoly = true);
-		ClientPlayNetworking.registerGlobalReceiver(PolydexRecipesPacket.ID, (packet, _) -> {
-			RECIPES.clear();
-			RECIPES.addAll(packet.recipes());
-			onPolyRecipes.run();
-		});
+		ClientPlayNetworking.registerGlobalReceiver(PolydexRecipesPacket.ID, (packet, context) -> {
+			try (var client = context.client()) {
+				client.execute(() -> {
+					RECIPES.clear();
+					RECIPES.addAll(packet.recipes());
+
+					BridgeJEIPlugin.injectServerRecipes(packet.recipes());
+				});
+			} catch (Exception _) {}
+        });
 	}
-	
+
 	private void disconnect() {
 		RECIPES.clear();
 		waitForPoly = false;

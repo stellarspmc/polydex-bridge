@@ -1,6 +1,5 @@
 package dev.mattidragon.polydexbridge.data;
 
-
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;

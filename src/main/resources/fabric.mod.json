@@ -3,14 +3,10 @@
 	"id": "polydex-bridge",
 	"version": "${version}",
 	"name": "PolydexBridge",
-	"description": "Bridges polydex recipes to EMI",
+	"description": "Bridges polydex recipes to JEI",
 	"authors": [
 		"MattiDragon"
 	],
-	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
-	},
 	"license": "MIT",
 	"icon": "assets/polydex-bridge/icon.png",
 	"environment": "*",
@@ -21,22 +17,19 @@
 		"client": [
           "dev.mattidragon.polydexbridge.PolydexBridgeClient"
 		],
-		"emi": [
-			"dev.mattidragon.polydexbridge.BridgeEmiPlugin"
+		"jei_plugin": [
+			"dev.mattidragon.polydexbridge.BridgeJEIPlugin"
 		]
 	},
 	"mixins": [
-		"polydex-bridge.mixins.json",
-		{
-			"config": "polydex-bridge.client.mixins.json",
-			"environment": "client"
-		}
+		"polydex-bridge.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.19.3",
 		"minecraft": "~26.2",
 		"java": ">=25",
 		"fabric-api": "*",
-		"polydex": ">=1.10.0"
+		"polydex": ">=1.10.0",
+		"jei": "*"
 	}
 }

@@ -9,13 +9,10 @@ import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
 public class PolydexBridge implements ModInitializer {
-    public static final Logger LOGGER = LoggerFactory.getLogger("PolydexBridge");
 	public static final String MOD_ID = "polydex-bridge";
 
 	@Override
@@ -29,11 +26,7 @@ public class PolydexBridge implements ModInitializer {
 	}
 
 	private static void sendRecipes(MinecraftServer server) {
-		for (var player : server.getPlayerList().getPlayers()) {
-			if (ServerPlayNetworking.canSend(player, PolydexRecipesPacket.ID)) {
-				ServerPlayNetworking.send(player, createPacket(player));
-			}
-		}
+		for (var player : server.getPlayerList().getPlayers()) if (ServerPlayNetworking.canSend(player, PolydexRecipesPacket.ID)) ServerPlayNetworking.send(player, createPacket(player));
 	}
 
 	public static PolydexRecipesPacket createPacket(ServerPlayer player) {
