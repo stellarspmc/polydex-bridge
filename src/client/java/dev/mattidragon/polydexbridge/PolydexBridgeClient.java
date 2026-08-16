@@ -1,5 +1,6 @@
 package dev.mattidragon.polydexbridge;
 
+import dev.mattidragon.polydexbridge.data.BridgeCategory;
 import dev.mattidragon.polydexbridge.data.BridgeRecipe;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents;
@@ -9,6 +10,8 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class PolydexBridgeClient implements ClientModInitializer {
 	public static final List<BridgeRecipe> RECIPES = new ArrayList<>();
@@ -25,6 +28,11 @@ public class PolydexBridgeClient implements ClientModInitializer {
 				client.execute(() -> {
 					RECIPES.clear();
 					RECIPES.addAll(packet.recipes());
+
+					Set<BridgeCategory> categories = packet.recipes().stream()
+							.flatMap(r -> r.categories().stream())
+							.collect(Collectors.toSet());
+					CategoryCache.save(categories);
 
 					BridgeJEIPlugin.injectServerRecipes(packet.recipes());
 				});
